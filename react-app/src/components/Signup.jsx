@@ -1,23 +1,63 @@
-// import { Link } from "react-router-dom";
-// import Header from "./Header";
+import { Link } from "react-router-dom";
+import Header from "./Header";
+import { useState } from "react";
+import axios from "axios";
+//import API_URL from "../constants";
+
+function Signup() {
+
+    const [username, setusername] = useState('');
+    const [password, setpassword] = useState('');
+ 
 
 
-// function Signup() {
-//     return(
-//     <div>
-//         <Header/>
-//         Welcome to signup page...
-//         <br></br>
-//         USERNAME
-//         <input type="text"/>
-//         <br></br>
-//         PASSWORD
-//       <input type="text"/>
-//       <br></br>
-//       <button> Signup </button>
-//       <Link to="/login"> LOGIN</Link>
-//     </div>
-//     )
-// }
+    const handleApi = () => {
+      console.log({username , password});
+        const url = 'http://localhost:4000/signup';
+        const data = { username, password};
+        axios.post(url, data)
+            .then((res) => {
+              console.log(res)
+            })
+            .catch((err) => {
+              console.log(err)
+            })
+    }
+    return ( 
+        <div>
+            <Header />
+            <div className="p-3 m-3">
+                <h3> Welcome to Signup Page </h3>
+                <br></br>
+                USERNAME
+                <input className="form-control" type="text" value={username}
+                    onChange={(e) => {
+                        setusername(e.target.value)
+                    }} />
+                <br></br>
+                {/* MOBILE
+                <input className="form-control" type="text" value={mobile}
+                    onChange={(e) => {
+                        setmobile(e.target.value)
+                    }} />
+                <br></br>
+                EMAIL
+                <input className="form-control" type="text" value={email}
+                    onChange={(e) => {
+                        setemail(e.target.value)
+                    }} />
+                <br></br> */}
+                PASSWORD
+                <input className="form-control" type="text" value={password}
+                    onChange={(e) => {
+                        setpassword(e.target.value)
+                    }} />
+                <br></br>
+                <button className="btn btn-primary mr-3" onClick={handleApi}> SIGNUP </button>
+                <Link className="m-3" to="/login">  LOGIN </Link>
+            </div>
+        </div>
+    )
+}
 
-// export default Signup;
+export default Signup;
