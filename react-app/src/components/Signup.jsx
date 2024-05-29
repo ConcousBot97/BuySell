@@ -17,7 +17,9 @@ function Signup() {
         const data = { username, password};
         axios.post(url, data)
             .then((res) => {
-              console.log(res)
+              if (res.data.message) {
+                alert(res.data.message);
+              }
             })
             .catch((err) => {
               console.log(err)
