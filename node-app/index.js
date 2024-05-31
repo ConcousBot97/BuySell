@@ -1,9 +1,22 @@
 
 const express = require('express')
 const cors = require('cors')
+const path=require('path');
 var jwt = require('jsonwebtoken');
+const multer  = require('multer')
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads')
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+    cb(null, file.fieldname + '-' + uniqueSuffix)
+  }
+}) 
+const upload = multer({ storage: storage })
 const bodyParser = require('body-parser')
 const app = express()
+app.use('/uploads',express.static(path.join(__dirname,'uploads')));
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -15,10 +28,46 @@ const mongoose = require('mongoose');
 mongoose.connect('mongodb+srv://puruyadav2003:puneet123@buysell.n0yey40.mongodb.net/?retryWrites=true&w=majority&appName=buysell');
 
 const Users = mongoose.model('Users', { username: String , password: String});
-
+const Products = mongoose.model('Products', { pname: String , pdesc: String , price:String , category:String , pimage: String});
 app.get('/', (req, res) => {
-  res.send('Hello World! gjfdfjlv.kdfsgbjfskg fgkmg')
+  res.send('Hello World!')
 })
+
+app.post('/add-product',upload.single('pimage'), (req,res)=>{
+  console.log(req.body);
+  console.log(req.file.path);
+  const pname = req.body.pname;
+  const pdesc = req.body.pdesc;
+  const price = req.body.price;
+  const category = req.body.category;
+  const pimage = req.file.path;
+
+
+  const product = new Products({ pname , pdesc , price , category , pimage });
+  product.save()
+  .then(() => {
+        res.send({message : 'saved successfully'})
+  })
+  .catch(() => {
+    res.send({message : 'server error'})
+  })
+
+})
+
+app.get('/get-products' , (req,res)=>{
+
+  Products.find()
+  .then((result)=>{
+    console.log(result,"user data")
+    res.send({message: 'success' , products: result})
+  })
+  .catch((err)=>{
+    res.send({message : 'server error'})
+  })
+
+
+})
+
 
 app.post('/signup', (req, res) => {
    const username = req.body.username;
@@ -42,6 +91,7 @@ app.post('/login', (req, res) => {
 
   Users.findOne({ username: username })
   .then((result) => {
+    console.log(result,"user data")
       if (!result) {
           res.send({ message: 'user not found.' })
       } else {

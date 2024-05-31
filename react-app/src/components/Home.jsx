@@ -1,22 +1,59 @@
-import { useEffect} from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import Header from "./Header";
+import axios from "axios";
 
-function Home(){
+function Home() {
     const navigate = useNavigate()
-   useEffect(() => {
-           if(!localStorage.getItem('token')){
-            navigate('/login')
-           }
-   }, [])
+    const [products, setproducts] = useState([]);
+    
+    
+    // useEffect(() => {
+    //     if (!localStorage.getItem('token')) {
+    //         navigate('/login')
+    //     }
+    // }, [])
 
-    return(
+
+
+    useEffect(() => {
+        const url = 'http://localhost:4000/get-products';
+        axios.get(url)
+            .then((res) => {
+                console.log(res);
+                if (res.data.products) {
+                    setproducts(res.data.products);
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+                alert('Server error')
+            })
+    }, [])
+
+    return (
         <div>
-        <Header/>
-        Welcome to home...
-    </div>
+            <Header />
+            {!!localStorage.getItem('token') && <Link to="/add-product"> ADD PRODUCT </Link>}
+
+            <h2>MY PRODUCTS : </h2>
+            <div className="d-flex justify-content-center flex-wrap">
+            {products && products.length > 0 &&
+                products.map((item, index) => {
+                    return (
+                        <div className="card m-3">
+                            <img width="300px" height="200px" src={'http://localhost:4000/'+item.pimage}  />
+                            <p className="m-2"> {item.pname} | {item.category} </p>
+                            <h3 className="m-2 text-danger"> {item.price}</h3>
+                            <p className="m-2 text-success"> {item.pdesc}</p>
+                        </div>
+                    )
+                })}
+                </div>
+
+        </div>
     )
- 
+
 }
 
 export default Home;

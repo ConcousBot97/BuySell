@@ -17,7 +17,7 @@ function Header(){
         <div className="header">
                    <Link to="/">HomePage</Link>
 
-           <span className="mt-3">This is Header filesghfmghj</span> 
+           <span className="mt-3">This is Header</span> 
 
        { !localStorage.getItem('token') ?
         <Link to="/login">LOGIN</Link> :
