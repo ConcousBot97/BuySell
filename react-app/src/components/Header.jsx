@@ -1,7 +1,7 @@
 
 import {Link, useNavigate} from 'react-router-dom';
 import './Header.css'
-
+import './Home.css';
 
 function Header(props){
 
@@ -16,7 +16,7 @@ function Header(props){
     return(
         <div className='header-container d-flex justify-content-between'>
         <div className="header">
-                   <Link to="/">HomePage</Link>
+                   <Link className='links' to="/">HomePage</Link>
 
                    <input className='search' type='text'value={props && props.search}
                     onChange={(e) => props.handlesearch && props.handlesearch(e.target.value)
@@ -29,6 +29,9 @@ function Header(props){
 
          <div>
                  
+
+       {!!localStorage.getItem('token') && <Link to="/add-product"> <button className='logout-btn'>ADD PRODUCT</button> </Link>}
+
 
        { !localStorage.getItem('token') ?
         <Link to="/login">LOGIN</Link> :
