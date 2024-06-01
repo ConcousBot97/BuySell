@@ -1,6 +1,6 @@
-import { useEffect,useState} from "react";
-import { useNavigate,Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import Header from "./Header";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
 function AddProduct(){
@@ -18,7 +18,7 @@ function AddProduct(){
            }
    }, [])
 
-   const handleApi = () =>{
+   const handleApi = () => {
     const formData=new FormData();
     formData.append('pname',pname)
     formData.append('pdesc',pdesc)
@@ -67,11 +67,10 @@ function AddProduct(){
             <option> Cloth </option>
         </select>
         <label>Product Image</label>
-        <input className="form-control" type="file" 
-        onChange={(e)=>{
-            setpimage(e.target.files)
-        }}
-        />
+        <input className="form-control" type="file"
+                    onChange={(e) => {
+                        setpimage(e.target.files[0])
+                    }} />
         <button onClick={handleApi} className="btn btn-primary mt-3">SUBMIT</button>
         </div>
     </div>
