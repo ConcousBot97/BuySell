@@ -30,15 +30,36 @@ const mongoose = require('mongoose');
 
 mongoose.connect('mongodb+srv://puruyadav2003:puneet123@buysell.n0yey40.mongodb.net/?retryWrites=true&w=majority&appName=buysell');
 
-const Users = mongoose.model('Users', { username: String , password: String});
+const Users = mongoose.model('Users', { 
+  username: String , 
+  password: String ,
+  likedProducts : [{type: mongoose.Schema.Types.ObjectId,ref:'Products'}]
+});
 const Products = mongoose.model('Products', { pname: String , pdesc: String , price:String , category:String , pimage: String});
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
+app.post('/like-product',(req,res)=>{
+  let productId=req.body.productId;
+  let userId=req.body.userId;
+
+
+
+  Users.updateOne({_id: userId},{$addToSet : {likedProducts : productId}})
+  .then(() => {
+    res.send({message : 'liked successfully'})
+})
+.catch(() => {
+res.send({message : 'server error'})
+})
+
+})
+
+
 app.post('/add-product',upload.single('pimage'), (req,res)=>{
-  console.log(req.body);
-  console.log(req.file.path);
+ // console.log(req.body);
+ // console.log(req.file.path);
   const pname = req.body.pname;
   const pdesc = req.body.pdesc;
   const price = req.body.price;
@@ -61,7 +82,7 @@ app.get('/get-products' , (req,res)=>{
 
   Products.find()
   .then((result)=>{
-    console.log(result,"user data")
+   // console.log(result,"user data")
     res.send({message: 'success' , products: result})
   })
   .catch((err)=>{
@@ -71,11 +92,37 @@ app.get('/get-products' , (req,res)=>{
 
 })
 
+app.get('/get-product/:pId' , (req,res)=>{
+  console.log(req.params);
+  Products.findOne( { _id : req.params.pId })
+  .then((result)=>{
+   // console.log(result,"user data")
+    res.send({message: 'success' , product: result})
+  })
+  .catch((err)=>{
+    res.send({message : 'server error'})
+  })
+
+
+})
+
+app.post('/liked-products', (req, res) => {
+  const userId = req.params.userId;
+  Users.findOne({ _id: req.body.userId }).populate('likedProducts')
+    .then((result) => {
+      res.send({ message: 'success', products: result.likedProducts })
+    })
+    .catch((err) => {
+      res.send({ message: 'server error' })
+    })
+})
+
+
 
 app.post('/signup', (req, res) => {
    const username = req.body.username;
    const password = req.body.password;
-  console.log(req.body)
+ // console.log(req.body)
 
   const user = new Users({ username: username , password: password });
   user.save()
@@ -94,7 +141,7 @@ app.post('/login', (req, res) => {
 
   Users.findOne({ username: username })
   .then((result) => {
-    console.log(result,"user data")
+   // console.log(result,"user data")
       if (!result) {
           res.send({ message: 'user not found.' })
       } else {

@@ -11,7 +11,8 @@ import {
 import Login from './components/Login';
 import Signup from './components/Signup';
 import AddProduct from './components/AddProduct';
-
+import LikedProducts from './components/LikedProducts';
+import ProductDetail from './components/ProductDetail';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -32,6 +33,14 @@ const router = createBrowserRouter([
   {
     path: "/add-product",
     element: (<AddProduct/>),
+  },
+  {
+    path: "/liked-products",
+    element: (<LikedProducts />),
+  },
+  {
+    path: "/product/:productId",
+    element: (<ProductDetail />),
   },
 ]);
 createRoot(document.getElementById("root")).render(

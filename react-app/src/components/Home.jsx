@@ -75,8 +75,26 @@ function Home() {
             setcproducts(filteredProducts)
         }
 
-        
-
+        const handleLike=(productId)=>{
+            let userId=localStorage.getItem('userId');
+            const url = 'http://localhost:4000/like-product';
+            const data={userId,productId}
+            axios.post(url,data)
+            .then((res) => {
+               
+                console.log(res);
+                if(res.data.message){
+                    alert('Liked success')
+                }
+            })
+            .catch((err) => {
+              
+                alert('Server error')
+            })
+        }
+        const handleProduct = (id)=>{
+            navigate('/product/' + id)
+        }
 
     return (
         <div>
@@ -89,10 +107,10 @@ function Home() {
                 cproducts.map((item, index) => {
                     return (
                         <div key={item._id} className="card m-3">
-                            <div className="icon-con">
+                            <div onClick={()=>handleLike(item._id)} className="icon-con">
                                     <FaHeart className="icons" />
                                 </div>
-                            <img width="300px" height="200px" src={'http://localhost:4000/'+item.pimage}  />
+                            <img width="250px" height="100px" src={'http://localhost:4000/'+item.pimage}  />
                             <p className="m-2"> {item.pname} | {item.category} </p>
                             <h3 className="m-2 text-danger"> {item.price}</h3>
                             <p className="m-2 text-success"> {item.pdesc}</p>
@@ -109,13 +127,13 @@ function Home() {
             {products && products.length > 0 &&
                 products.map((item, index) => {
                     return (
-                        <div key={item._id} className="card m-3">
-                            <div className="icon-con">
+                        <div onClick={()=>handleProduct(item._id)} key={item._id} className="card m-3">
+                            <div onClick={()=>handleLike(item._id)} className="icon-con">
                                     <FaHeart className='icons' />
                                 </div>
-                            <img width="300px" height="200px" src={'http://localhost:4000/'+item.pimage}  />
+                            <img width="250px" height="150px" src={'http://localhost:4000/'+item.pimage}  />
+                            <h3 className="m-2 price-text"> Rs. {item.price} /-</h3>
                             <p className="m-2"> {item.pname} | {item.category} </p>
-                            <h3 className="m-2 text-danger"> {item.price}</h3>
                             <p className="m-2 text-success"> {item.pdesc}</p>
                         </div>
                     )

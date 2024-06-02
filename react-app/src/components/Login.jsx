@@ -19,7 +19,8 @@ function Login() {
                 alert(res.data.message);
                   if (res.data.token) {
                       localStorage.setItem('token', res.data.token);
-                     
+                      localStorage.setItem('userId', res.data.userId);
+
                       navigate('/');
                   }
               }
