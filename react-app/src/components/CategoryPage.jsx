@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useParams } from "react-router-dom";
 import Header from "./Header";
 import axios from "axios";
 import Categories from "./Categories";
 import './Home.css';
 import { FaHeart } from "react-icons/fa";
 
-function Home() {
+function CategoryPage() {
     const navigate = useNavigate()
+
+    const param = useParams()
+    console.log(param);
 
     const [products, setproducts] = useState([]);
     const [cproducts, setcproducts] = useState([]);
@@ -24,7 +27,7 @@ function Home() {
 
 
     useEffect(() => {
-        const url = 'http://localhost:4000/get-products';
+        const url = 'http://localhost:4000/get-products?catName=' + param.catName;
         axios.get(url)
             .then((res) => {
                
@@ -149,4 +152,4 @@ function Home() {
 
 }
 
-export default Home;
+export default CategoryPage;

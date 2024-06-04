@@ -40,6 +40,28 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
+app.get('/search' , (req,res) => {
+   
+
+    let search = req.query.search;
+
+    Products.find({
+      $or: [
+        { pname: { $regex: search } },
+        { pdesc: { $regex: search } },
+        { price: { $regex: search } },
+    ]
+    })
+
+     .then((results)=>{
+      // console.log(result,"user data")
+       res.send({message: 'success' , products: results})
+     })
+     .catch((err)=>{
+       res.send({message : 'server error'})
+     })
+})
+
 app.post('/like-product',(req,res)=>{
   let productId=req.body.productId;
   let userId=req.body.userId;
@@ -79,15 +101,22 @@ app.post('/add-product',upload.single('pimage'), (req,res)=>{
 })
 
 app.get('/get-products' , (req,res)=>{
+  
+  const catName = req.query.catName;
+    let _f = {}
 
-  Products.find()
-  .then((result)=>{
-   // console.log(result,"user data")
-    res.send({message: 'success' , products: result})
-  })
-  .catch((err)=>{
-    res.send({message : 'server error'})
-  })
+    if (catName) {
+        _f = { category: catName }
+    }
+
+    Products.find(_f)
+        .then((result) => {
+            res.send({ message: 'success', products: result })
+
+        })
+        .catch((err) => {
+            res.send({ message: 'server err' })
+        })
 
 
 })
