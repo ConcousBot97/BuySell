@@ -11,7 +11,7 @@ function Header(props) {
 
     const handleLogout = () => {
         localStorage.removeItem('token');
-
+        localStorage.removeItem('userId');
         navigate('/login');
     }
     return (
@@ -35,24 +35,30 @@ function Header(props) {
                         setshowOver(!showOver)
                     }}
                     style={{
-                        display: 'flex', justifyContent: 'center',
-                        alignItems: 'center', background: '#002f34',
-                        width: '40px', height: '40px', color : '#fff' ,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        background: '#002f34',
+                        width: '40px',
+                        height: '40px',
+                        color: '#fff',
+                        fontSize: '14px',
                         borderRadius: '50%'
                     }}> N </div>
 
                 {showOver && <div style={{
+                    minHeight : '100px',
                     width: '200px',
                     background: '#002f34',
                     position: 'absolute',
                     top: '0',
                     right: '0',
-                    zIndex : '1',
+                    zIndex: '1',
                     marginTop: '60px',
                     marginRight: '50px',
-                    color : 'red',
-                    fontSize : '14px',
-                   borderRadius : '7px' 
+                    color: 'red',
+                    fontSize: '14px',
+                    borderRadius: '7px'
                 }}>
                     <div>
                         {!!localStorage.getItem('token') &&
