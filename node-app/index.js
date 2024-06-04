@@ -31,11 +31,21 @@ const mongoose = require('mongoose');
 mongoose.connect('mongodb+srv://puruyadav2003:puneet123@buysell.n0yey40.mongodb.net/?retryWrites=true&w=majority&appName=buysell');
 
 const Users = mongoose.model('Users', { 
-  username: String , 
+  username: String ,
+  mobile: String,
+  email: String, 
   password: String ,
   likedProducts : [{type: mongoose.Schema.Types.ObjectId,ref:'Products'}]
 });
-const Products = mongoose.model('Products', { pname: String , pdesc: String , price:String , category:String , pimage: String});
+const Products = mongoose.model('Products', {
+   pname: String ,
+   pdesc: String ,
+    price:String ,
+     category:String ,
+     pimage: String,
+     pimage2: String,
+      addedBy : mongoose.Schema.Types.ObjectId
+    });
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
@@ -79,17 +89,19 @@ res.send({message : 'server error'})
 })
 
 
-app.post('/add-product',upload.single('pimage'), (req,res)=>{
+app.post('/add-product',upload.fields([{name : 'pimage' },{ name : 'pimage2'}]), (req,res)=>{
  // console.log(req.body);
  // console.log(req.file.path);
   const pname = req.body.pname;
   const pdesc = req.body.pdesc;
   const price = req.body.price;
   const category = req.body.category;
-  const pimage = req.file.path;
+  const pimage = req.files.pimage[0].path;
+  const pimage2 = req.files.pimage2[0].path;
+  const addedBy = req.body.userId;
 
 
-  const product = new Products({ pname , pdesc , price , category , pimage });
+  const product = new Products({ pname , pdesc , price , category , pimage, pimage2, addedBy });
   product.save()
   .then(() => {
         res.send({message : 'saved successfully'})
@@ -151,9 +163,11 @@ app.post('/liked-products', (req, res) => {
 app.post('/signup', (req, res) => {
    const username = req.body.username;
    const password = req.body.password;
+   const email = req.body.email;
+   const mobile = req.body.mobile;
  // console.log(req.body)
 
-  const user = new Users({ username: username , password: password });
+  const user = new Users({ username: username , password: password,email: email,mobile: mobile });
   user.save()
   .then(() => {
         res.send({message : 'saved successfully'})
@@ -162,6 +176,19 @@ app.post('/signup', (req, res) => {
     res.send({message : 'server error'})
   })
   
+})
+
+app.get('/get-user/:uId' ,(req,res) => {
+
+  const userId = req.params.uId;
+  Users.findOne({ _id: userId })
+      .then((result) => {
+          res.send({
+              message: 'success.', user: result })
+      })
+      .catch(() => {
+          res.send({ message: 'server err' })
+      })
 })
 
 app.post('/login', (req, res) => {
