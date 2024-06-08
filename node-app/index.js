@@ -158,6 +158,19 @@ app.post('/liked-products', (req, res) => {
     })
 })
 
+app.post('/my-products', (req, res) => {
+
+  const userId = req.body.userId;
+
+  Products.find({ addedBy: userId })
+      .then((result) => {
+          res.send({ message: 'success', products: result })
+      })
+      .catch((err) => {
+          res.send({ message: 'server err' })
+      })
+})
+
 
 
 app.post('/signup', (req, res) => {
@@ -176,6 +189,26 @@ app.post('/signup', (req, res) => {
     res.send({message : 'server error'})
   })
   
+})
+
+app.get('/my-profile/:userId' ,(req,res) => {
+  let uid = req.params.userId
+
+  Users.findOne({ _id: uid })
+      .then((result) => {
+          res.send({
+              message: 'success.', user: {
+                  email: result.email,
+                  mobile: result.mobile,
+                  username: result.username
+              }
+          })
+      })
+      .catch(() => {
+          res.send({ message: 'server err' })
+      })
+
+  return;
 })
 
 app.get('/get-user/:uId' ,(req,res) => {

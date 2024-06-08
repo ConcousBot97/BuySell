@@ -100,7 +100,7 @@ function LikedProducts() {
             <Header search={search} handlesearch={handlesearch} handleClick={handleClick} />
             <Categories handleCategory={handleCategory} />
 
-            <h5>SEARCH RESULTS:</h5>
+        
             <div className="d-flex justify-content-center flex-wrap">
             {cproducts && products.length > 0 &&
                 cproducts.map((item, index) => {
