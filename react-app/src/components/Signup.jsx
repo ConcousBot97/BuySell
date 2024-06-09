@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import Header from "./Header";
 import { useState } from "react";
 import axios from "axios";
-//import API_URL from "../constants";
+import API_URL from "../constants";
 
 function Signup() {
 
@@ -14,7 +14,7 @@ function Signup() {
 
     const handleApi = () => {
       console.log({username , password});
-        const url = 'http://localhost:4000/signup';
+        const url = API_URL+'/signup';
         const data = { username, password, mobile, email};
         axios.post(url, data)
             .then((res) => {

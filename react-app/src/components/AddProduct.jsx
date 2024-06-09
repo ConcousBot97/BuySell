@@ -3,7 +3,7 @@ import Header from "./Header";
 import categories from "./CategoriesList";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-
+import API_URL from "../constants";
 function AddProduct(){
     const navigate = useNavigate()
     const [pname, setpname] = useState('');
@@ -31,7 +31,7 @@ function AddProduct(){
     formData.append('userId',localStorage.getItem('userId'))
 
 
-        const url='http://localhost:4000/add-product';
+        const url=API_URL+'/add-product';
         axios.post(url,formData)
         .then((res)=>{
             console.log(res)
