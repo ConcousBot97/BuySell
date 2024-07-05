@@ -13,11 +13,13 @@ function CategoryPage() {
     console.log(param);
 
     const [products, setproducts] = useState([]);
+    const [likedproducts, setlikedproducts] = useState([]);
+    const [refresh, setrefresh] = useState(false);
     const [cproducts, setcproducts] = useState([]);
     const [search, setsearch] = useState('');
     const [issearch, setissearch] = useState(false);
-    
-    
+
+
     // useEffect(() => {
     //     if (!localStorage.getItem('token')) {
     //         navigate('/login')
@@ -27,19 +29,34 @@ function CategoryPage() {
 
 
     useEffect(() => {
-        const url = API_URL+'/get-products?catName=' + param.catName;
+        const url = API_URL + '/get-products?catName=' + param.catName;
         axios.get(url)
+            .then((res) => {
+
+                if (res.data.products) {
+                    setproducts(res.data.products);
+                }
+            })
+            .catch((err) => {
+
+                alert('Server error')
+            })
+            
+            const url2 = API_URL+'/liked-products';
+       let data={userId: localStorage.getItem('userId')}
+        axios.post(url2,data )
             .then((res) => {
                
                 if (res.data.products) {
-                    setproducts(res.data.products);
+                    setlikedproducts(res.data.products);
                 }
             })
             .catch((err) => {
               
                 alert('Server error')
             })
-    }, [])
+
+    }, [param,refresh])
 
 
     const handlesearch = (value) => {
@@ -48,7 +65,7 @@ function CategoryPage() {
 
     const handleClick = () => {
 
-        const url = API_URL+'/search?search=' + search ;
+        const url = API_URL + '/search?search=' + search;
         axios.get(url)
             .then((res) => {
                 setcproducts(res.data.products);
@@ -56,10 +73,10 @@ function CategoryPage() {
             })
             .catch((err) => {
                 alert('Server Err.')
-            })  
-        
+            })
 
-       
+
+
         // let filteredProducts = products.filter((item) => {
         //        if(item.pname.toLowerCase().includes(search.toLowerCase()) || item.pdesc.toLowerCase().includes(search.toLowerCase()) || item.category.toLowerCase().includes(search.toLowerCase())){
         //         return item;
@@ -67,37 +84,65 @@ function CategoryPage() {
         // })
         //setcproducts(filteredProducts)
 
-        }
+    }
 
-        const handleCategory = (value) => {
-            let filteredProducts = products.filter((item, index) => {
-                if (item.category == value) {
-                    return item;
-                }
-            })
-            setcproducts(filteredProducts)
-        }
+    const handleCategory = (value) => {
+        let filteredProducts = products.filter((item, index) => {
+            if (item.category == value) {
+                return item;
+            }
+        })
+        setcproducts(filteredProducts)
+    }
 
-        const handleLike=(productId)=>{
-            let userId=localStorage.getItem('userId');
-            const url = API_URL+'/like-product';
-            const data={userId,productId}
-            axios.post(url,data)
+    const handleLike = (productId,e) => {
+        e.stopPropagation();
+        let userId = localStorage.getItem('userId');
+        const url = API_URL + '/like-product';
+        const data = { userId, productId }
+        axios.post(url, data)
             .then((res) => {
-               
+
                 console.log(res);
-                if(res.data.message){
-                    alert('Liked success')
+                if (res.data.message) {
+                    //alert('Liked success')
+                    setrefresh(!refresh)
                 }
             })
             .catch((err) => {
-              
+
                 alert('Server error')
             })
+    }
+
+    const handleDisLike = (productId, e) => {
+        e.stopPropagation();
+        let userId = localStorage.getItem('userId');
+
+        if (!userId) {
+            alert('Please login first')
+            return;
         }
-        const handleProduct = (id)=>{
-            navigate('/product/' + id)
-        }
+        const url = API_URL + '/dislike-product';
+        const data = { userId, productId }
+        axios.post(url, data)
+            .then((res) => {
+
+                console.log(res);
+                if (res.data.message) {
+
+                    setrefresh(!refresh)
+                }
+            })
+            .catch((err) => {
+
+                alert('Server error')
+            })
+    }
+
+    const handleProduct = (id) => {
+        navigate('/product/' + id)
+    }
 
     return (
         <div>
@@ -109,44 +154,48 @@ function CategoryPage() {
                     <button className="clear-btn" onClick={() => setissearch(false)}> CLEAR </button>
                 </h5>}
             {issearch && cproducts && cproducts.length == 0 && <h5>NO RESULT FOUND</h5>}
-         {issearch && <div className="d-flex justify-content-center flex-wrap">
-            {cproducts && products.length > 0 &&
-                cproducts.map((item, index) => {
-                    return (
-                        <div key={item._id} className="card m-3">
-                            <div onClick={()=>handleLike(item._id)} className="icon-con">
+            {issearch && <div className="d-flex justify-content-center flex-wrap">
+                {cproducts && products.length > 0 &&
+                    cproducts.map((item, index) => {
+                        return (
+                            <div key={item._id} className="card m-3">
+                                <div onClick={() => handleLike(item._id)} className="icon-con">
                                     <FaHeart className="icons" />
                                 </div>
-                            <img width="250px" height="100px" src={API_URL+'/'+item.pimage}  />
-                            <p className="m-2"> {item.pname} | {item.category} </p>
-                            <h3 className="m-2 text-danger"> {item.price}</h3>
-                            <p className="m-2 text-success"> {item.pdesc}</p>
-                        </div>
-                    )
-                })}
-                </div>}
-
-             
+                                <img width="250px" height="100px" src={API_URL + '/' + item.pimage} />
+                                <p className="m-2"> {item.pname} | {item.category} </p>
+                                <h3 className="m-2 text-danger"> {item.price}</h3>
+                                <p className="m-2 text-success"> {item.pdesc}</p>
+                            </div>
+                        )
+                    })}
+            </div>}
 
 
-          {!issearch &&  <div className="d-flex justify-content-center flex-wrap">
-            {products && products.length > 0 &&
-                products.map((item, index) => {
-                    return (
-                        <div onClick={()=>handleProduct(item._id)} key={item._id} className="card m-3">
-                            <div onClick={()=>handleLike(item._id)} className="icon-con">
-                                    <FaHeart className='icons' />
+
+
+            {!issearch && <div className="d-flex justify-content-center flex-wrap">
+                {products && products.length > 0 &&
+                    products.map((item, index) => {
+                        return (
+                            <div onClick={() => handleProduct(item._id)} key={item._id} className="card m-3">
+                                <div className="icon-con">
+                                    {
+                                        likedproducts.find((likedItem) => likedItem._id == item._id) ?
+                                            <FaHeart onClick={(e) => handleDisLike(item._id, e) && e.stopPropagation()} className='red-icons' /> :
+                                            <FaHeart onClick={(e) => handleLike(item._id, e) && e.stopPropagation()} className='icons' />
+                                    }
                                 </div>
-                            <img width="250px" height="150px" src={API_URL+'/'+item.pimage}  />
-                            <h3 className="m-2 price-text"> Rs. {item.price} /-</h3>
-                            <p className="m-2"> {item.pname} | {item.category} </p>
-                            <p className="m-2 text-success"> {item.pdesc}</p>
-                        </div>
-                    )
-                })}
-                </div>}
+                                <img width="250px" height="150px" src={API_URL + '/' + item.pimage} />
+                                <h3 className="m-2 price-text"> Rs. {item.price} /-</h3>
+                                <p className="m-2"> {item.pname} | {item.category} </p>
+                                <p className="m-2 text-success"> {item.pdesc}</p>
+                            </div>
+                        )
+                    })}
+            </div>}
 
-               
+
         </div>
     )
 
