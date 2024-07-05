@@ -26,6 +26,24 @@ res.send({message : 'server error'})
 
 }
 
+
+module.exports.dislikeProducts = (req, res) => {
+    let productId=req.body.productId;
+  let userId=req.body.userId;
+
+
+
+  Users.updateOne({_id: userId},{$pull : {likedProducts : productId}})
+  .then(() => {
+    res.send({message : 'Disliked successfully'})
+})
+.catch(() => {
+res.send({message : 'server error'})
+})
+
+
+}
+
 module.exports.signup = (req, res) => {
     const username = req.body.username;
     const password = req.body.password;

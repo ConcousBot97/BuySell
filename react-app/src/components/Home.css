@@ -5,9 +5,16 @@
     color: #ddd;
     cursor: pointer;
 }
+.red-icons {
+    font-size: 32px;
+    height: 32px;
+    width: 32px;
+    color: red;
+    cursor: pointer;
+}
 
 .icons:hover {
-    color: red;
+    color: #aaa;
 }
 
 .icon-con {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Header from "./Header";
 import axios from "axios";
@@ -10,6 +10,8 @@ function Home() {
     const navigate = useNavigate()
 
     const [products, setproducts] = useState([]);
+    const [likedproducts, setlikedproducts] = useState([]);
+    const [refresh, setrefresh] = useState(false);
     const [cproducts, setcproducts] = useState([]);
     const [search, setsearch] = useState('');
     const [issearch, setissearch] = useState(false);
@@ -36,7 +38,21 @@ function Home() {
               
                 alert('Server error')
             })
-    }, [])
+
+            const url2 = API_URL+'/liked-products';
+       let data={userId: localStorage.getItem('userId')}
+        axios.post(url2,data )
+            .then((res) => {
+               
+                if (res.data.products) {
+                    setlikedproducts(res.data.products);
+                }
+            })
+            .catch((err) => {
+              
+                alert('Server error')
+            })
+    }, [refresh])
 
 
     const handlesearch = (value) => {
@@ -90,7 +106,8 @@ function Home() {
                
                 console.log(res);
                 if(res.data.message){
-                    alert('Liked success')
+                    
+                    setrefresh(!refresh)
                 }
             })
             .catch((err) => {
@@ -98,6 +115,32 @@ function Home() {
                 alert('Server error')
             })
         }
+
+        const handleDisLike=(productId ,e)=>{
+            e.stopPropagation();
+            let userId=localStorage.getItem('userId');
+            
+            if(!userId)
+                {alert('Please login first')
+            return;
+            }
+            const url = API_URL+'/dislike-product';
+            const data={userId,productId}
+            axios.post(url,data)
+            .then((res) => {
+               
+                console.log(res);
+                if(res.data.message){
+                    
+                    setrefresh(!refresh)
+                }
+            })
+            .catch((err) => {
+              
+                alert('Server error')
+            })
+        }
+
         const handleProduct = (id)=>{
             navigate('/product/' + id)
         }
@@ -137,8 +180,12 @@ function Home() {
                 products.map((item, index) => {
                     return (
                         <div onClick={()=>handleProduct(item._id)} key={item._id} className="card m-3">
-                            <div onClick={(e)=>  handleLike(item._id,e) && e.stopPropagation()} className="icon-con">
-                                    <FaHeart className='icons' />
+                            <div className="icon-con">
+                                {
+                                    likedproducts.find((likedItem)=>likedItem._id==item._id) ?
+                                    <FaHeart onClick={(e)=>  handleDisLike(item._id,e) && e.stopPropagation()} className='red-icons' /> :
+                                    <FaHeart onClick={(e)=>  handleLike(item._id,e) && e.stopPropagation()} className='icons' /> 
+                                }
                                 </div>
                             <img width="250px" height="150px" src={API_URL+'/'+item.pimage}  />
                             <h3 className="m-2 price-text"> Rs. {item.price} /-</h3>
