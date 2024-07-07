@@ -65,6 +65,43 @@ module.exports.addProduct = (req, res) => {
 
 }
 
+module.exports.editProduct = (req, res) => {
+  const pid = req.body.pid;
+  const pname = req.body.pname;
+  const pdesc = req.body.pdesc;
+  const price = req.body.price;
+  const category = req.body.category;
+  let pimage = "";
+  let pimage2 = "";
+
+  // Check if pimage and pimage2 are provided in the request
+  if (req.files && req.files.pimage && req.files.pimage.length > 0) {
+    pimage = req.files.pimage[0].path;
+  }
+  if (req.files && req.files.pimage2 && req.files.pimage2.length > 0) {
+    pimage2 = req.files.pimage2[0].path;
+  }
+
+  // Prepare the object with fields to be updated
+  let editObj = {};
+  if (pname) editObj.pname = pname;
+  if (pdesc) editObj.pdesc = pdesc;
+  if (price) editObj.price = price;
+  if (category) editObj.category = category;
+  if (pimage) editObj.pimage = pimage;
+  if (pimage2) editObj.pimage2 = pimage2;
+
+  // Update the product in the database
+  Products.updateOne({ _id: pid }, editObj, { new: true })
+    .then((result) => {
+      res.send({ message: 'saved successfully', product: result });
+    })
+    .catch((err) => {
+      res.send({ message: 'server error', error: err });
+    });
+};
+
+
 
 module.exports.getProducts = (req, res) => {
 

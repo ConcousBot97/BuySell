@@ -14,6 +14,8 @@ function EditProduct() {
     const [category, setcategory] = useState('');
     const [pimage, setpimage] = useState(null);
     const [pimage2, setpimage2] = useState(null);
+    const [poldimage, setpoldimage] = useState(null);
+    const [poldimage2, setpoldimage2] = useState(null);
 
     useEffect(() => {
         if (!localStorage.getItem('token')) {
@@ -31,8 +33,8 @@ function EditProduct() {
                     setpdesc(product.pdesc)
                     setprice(product.price)
                     setcategory(product.category)
-                    setpimage(product.pimage)
-                    setpimage2(product.pimage2)
+                    setpoldimage(product.pimage)
+                    setpoldimage2(product.pimage2)
                 }
             })
             .catch((err) => {
@@ -42,27 +44,22 @@ function EditProduct() {
     }, [])
 
     const handleApi = () => {
-        if (!pname || !pdesc || !price || !category || !pimage || !pimage2) {
-            alert("Please fill in all fields and upload both images.");
-            return;
-        }
-
         const formData = new FormData();
+        formData.append('pid', p.productId);
         formData.append('pname', pname);
         formData.append('pdesc', pdesc);
         formData.append('price', price);
         formData.append('category', category);
-        formData.append('pimage', pimage);
-        formData.append('pimage2', pimage2);
+        if (pimage) formData.append('pimage', pimage); // Add condition to append pimage
+        if (pimage2) formData.append('pimage2', pimage2); // Add condition to append pimage2
         formData.append('userId', localStorage.getItem('userId'));
-
-        const url = API_URL + '/add-product';
+        const url = API_URL + '/edit-product';
         axios.post(url, formData)
             .then((res) => {
                 console.log(res);
                 if (res.data.message) {
                     alert(res.data.message);
-                    navigate('/');
+                    navigate('/my-products');
                 }
             })
             .catch((err) => {
@@ -113,14 +110,14 @@ function EditProduct() {
                     type="file"
                     onChange={(e) => { setpimage(e.target.files[0]) }}
                 />
-                <img src={API_URL + '/' + pimage} width={100} height={50} /> <br />
+                <img src={API_URL + '/' + poldimage} width={100} height={50} /> <br />
                 <label>Product Second Image</label>
                 <input style={{ width: '50%' }}
                     className="form-control"
                     type="file"
                     onChange={(e) => { setpimage2(e.target.files[0]) }}
                 />
-                <img src={API_URL + '/' + pimage2} width={100} height={50} /> <br />
+                <img src={API_URL + '/' + poldimage2} width={100} height={50} /> <br />
                 <button onClick={handleApi} className="btn btn-primary mt-3">SUBMIT</button>
             </div>
         </div>
